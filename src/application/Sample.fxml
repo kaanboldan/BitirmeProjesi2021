@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SampleController">
+   <children>
+      <TabPane prefHeight="600.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab text="Image Lock/Unlock">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="364.0">
+                     <children>
+                        <Button fx:id="lock_button" layoutX="195.0" layoutY="504.0" mnemonicParsing="false" onAction="#lock_button_click" text="Lock">
+                           <font>
+                              <Font size="25.0" />
+                           </font></Button>
+                        <Button fx:id="unlock_button" layoutX="289.0" layoutY="504.0" mnemonicParsing="false" onAction="#unlock_button_click" text="Unlock">
+                           <font>
+                              <Font size="25.0" />
+                           </font></Button>
+                        <ImageView fx:id="image_unlock" fitHeight="150.0" fitWidth="266.0" layoutX="14.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="image_lock" fitHeight="150.0" fitWidth="266.0" layoutX="314.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true" />
+                        <Button fx:id="imageAdd" layoutX="29.0" layoutY="504.0" mnemonicParsing="false" onAction="#imageAdd_btn" text="Resim Ekle">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="image_save" layoutX="416.0" layoutY="504.0" mnemonicParsing="false" onAction="#imageSave_btn" text="Kaydet">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Button>
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Image Editing">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fx:id="imageEditing_currentImage" fitHeight="270.0" fitWidth="480.0" layoutX="60.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" />
+                        <Slider fx:id="imageEditing_slider1" disable="true" layoutX="35.0" layoutY="403.0" onDragDetected="#imageEditing_slider1_ondrag" />
+                        <Slider fx:id="imageEditing_slider4" disable="true" layoutX="35.0" layoutY="454.0" onDragDetected="#imageEditing_slider4_ondrag" />
+                        <Slider fx:id="imageEditing_slider2" disable="true" layoutX="217.0" layoutY="403.0" onDragDetected="#imageEditing_slider2_ondrag" />
+                        <Slider fx:id="imageEditing_slider5" disable="true" layoutX="217.0" layoutY="454.0" onDragDetected="#imageEditing_slider5_ondrag" />
+                        <Slider fx:id="imageEditing_slider3" blockIncrement="2.0" disable="true" layoutX="400.0" layoutY="403.0" max="25.0" min="1.0" minorTickCount="1" onDragDetected="#imageEditing_slider3_ondrag" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                        <Slider fx:id="imageEditing_slider6" disable="true" layoutX="400.0" layoutY="454.0" onDragDetected="#imageEditing_slider6_ondrag" />
+                        <Button fx:id="imageEditing_LoadButton" layoutX="123.0" layoutY="508.0" mnemonicParsing="false" onAction="#imageEditingLoad_Button_click" text="Resim Yükle" />
+                        <Button fx:id="imageEditing_SaveImageButton" disable="true" layoutX="348.0" layoutY="508.0" mnemonicParsing="false" onAction="#imageEditing_SaveImageButton_click" text="Kaydet" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Recognition">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="Recognition_calculateButton" layoutX="360.0" layoutY="505.0" mnemonicParsing="false" onAction="#Recognition_calculate_button_click" text="Hesapla" />
+                        <Button fx:id="Recognition_loadImageButton" layoutX="71.0" layoutY="505.0" mnemonicParsing="false" onAction="#Recognition_loadImage_button_click" text="Resim Yükle" />
+                        <ImageView fx:id="Recognition_Image" fitHeight="384.0" fitWidth="559.0" layoutX="21.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+                        <ChoiceBox fx:id="Recognition_turSelection_cb" layoutX="175.0" layoutY="505.0" prefWidth="150.0" />
+                        <Button fx:id="Recognition_saveImageButton" layoutX="463.0" layoutY="505.0" mnemonicParsing="false" onAction="#Recognition_saveImageButton_click" text="Resmi Kaydet" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
