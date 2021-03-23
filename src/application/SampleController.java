@@ -16,14 +16,12 @@ import java.util.List;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.objdetect.CascadeClassifier;
 
 
 import org.opencv.core.MatOfFloat;
@@ -80,9 +78,11 @@ public class SampleController {
     String date = ft.format(dNow).toString();
     @FXML
     void initialize() {
-        System.out.println("init calisti");
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         this.image = new Mat();
         this.planes = new ArrayList < > ();
+
+        System.out.println("init calisti");
 
     }
 
@@ -320,7 +320,8 @@ public class SampleController {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         Mat dest=a.slider1(this.image,imageEditing_slider1.getValue());
         updateImageView(imageEditing_currentImage, mat2Image(dest));
-        Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
+        this.showHistogram(image);
+
     }
 
     @FXML
@@ -328,7 +329,7 @@ public class SampleController {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         Mat dest=a.slider2(image, imageEditing_slider2.getValue());
         updateImageView(imageEditing_currentImage, mat2Image(dest));
-        Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
+        this.showHistogram(image);
 
     }
     @FXML
@@ -352,79 +353,53 @@ public class SampleController {
     @FXML
     void imageEditing_slider4_ondrag(MouseEvent event) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        Mat src = image;
-        //Creating an empty matrix
-        Mat dest = new Mat(src.rows(), src.cols(), src.type());
-        //Increasing the contrast of the image
-        src.convertTo(dest, -1, imageEditing_slider4.getValue(), 0);
-        // Writing the image
+        a.slider4(image, )
         updateImageView(imageEditing_currentImage, mat2Image(dest));
         Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
     }
-    //TODO: Adam akıllı çalışmıyor hata 
+    //TODO: Adam akıllı çalışmıyor hata!!! 
    private void showHistogram(Mat frame)
 	{
-		// split the frames in multiple images
 		List<Mat> images = new ArrayList<Mat>();
 		Core.split(frame, images);
 		
-		// set the number of bins at 256
 		MatOfInt histSize = new MatOfInt(256);
-		// only one channel
 		MatOfInt channels = new MatOfInt(0);
-		// set the ranges
 		MatOfFloat histRange = new MatOfFloat(0, 256);
 		
-		// compute the histograms for the B, G and R components
 		Mat hist_b = new Mat();
 		Mat hist_g = new Mat();
 		Mat hist_r = new Mat();
 		
-		// B component or gray image
 		Imgproc.calcHist(images.subList(0, 1), channels, new Mat(), hist_b, histSize, histRange, false);
-		
-		// G and R components (if the image is not in gray scale)
-		
-		
-			Imgproc.calcHist(images.subList(1, 2), channels, new Mat(), hist_g, histSize, histRange, false);
-			Imgproc.calcHist(images.subList(2, 3), channels, new Mat(), hist_r, histSize, histRange, false);
+		Imgproc.calcHist(images.subList(1, 2), channels, new Mat(), hist_g, histSize, histRange, false);
+		Imgproc.calcHist(images.subList(2, 3), channels, new Mat(), hist_r, histSize, histRange, false);
 		
 		
-		// draw the histogram
-		int hist_w = 150; // width of the histogram image
-		int hist_h = 150; // height of the histogram image
+		int hist_w = 150; 
+		int hist_h = 150; 
 		int bin_w = (int) Math.round(hist_w / histSize.get(0, 0)[0]);
 		
 		Mat histImage = new Mat(hist_h, hist_w, CvType.CV_8UC3, new Scalar(0, 0, 0));
-		// normalize the result to [0, histImage.rows()]
+		
 		Core.normalize(hist_b, hist_b, 0, histImage.rows(), Core.NORM_MINMAX, -1, new Mat());
-		
-		// for G and R components
-		
-		
-			Core.normalize(hist_g, hist_g, 0, histImage.rows(), Core.NORM_MINMAX, -1, new Mat());
-			Core.normalize(hist_r, hist_r, 0, histImage.rows(), Core.NORM_MINMAX, -1, new Mat());
+		Core.normalize(hist_g, hist_g, 0, histImage.rows(), Core.NORM_MINMAX, -1, new Mat());
+		Core.normalize(hist_r, hist_r, 0, histImage.rows(), Core.NORM_MINMAX, -1, new Mat());
 		
 		
-		// effectively draw the histogram(s)
 		for (int i = 1; i < histSize.get(0, 0)[0]; i++)
 		{
-			// B component or gray image
 			Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_b.get(i - 1, 0)[0])),
 					new Point(bin_w * (i), hist_h - Math.round(hist_b.get(i, 0)[0])), new Scalar(255, 0, 0), 2, 8, 0);
-			// G and R components (if the image is not in gray scale)
-			
-			
-				Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_g.get(i - 1, 0)[0])),
+			Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_g.get(i - 1, 0)[0])),
 						new Point(bin_w * (i), hist_h - Math.round(hist_g.get(i, 0)[0])), new Scalar(0, 255, 0), 2, 8,
 						0);
-				Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_r.get(i - 1, 0)[0])),
+			Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_r.get(i - 1, 0)[0])),
 						new Point(bin_w * (i), hist_h - Math.round(hist_r.get(i, 0)[0])), new Scalar(0, 0, 255), 2, 8,
 						0);
 			
 		}
 		
-		// display the histogram...
 		Image histImg = mat2Image(histImage);
 		updateImageView(imageEditing_histogram, histImg);
 		

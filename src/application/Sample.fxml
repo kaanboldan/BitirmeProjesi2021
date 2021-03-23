@@ -51,6 +51,7 @@
                         <Slider fx:id="imageEditing_slider4" disable="true" layoutX="35.0" layoutY="454.0" onDragDetected="#imageEditing_slider4_ondrag" />
                         <Button fx:id="imageEditing_LoadButton" layoutX="123.0" layoutY="508.0" mnemonicParsing="false" onAction="#imageEditingLoad_Button_click" text="Resim Yükle" />
                         <Button fx:id="imageEditing_SaveImageButton" disable="true" layoutX="348.0" layoutY="508.0" mnemonicParsing="false" onAction="#imageEditing_SaveImageButton_click" text="Kaydet" />
+                        <ImageView fx:id="imageEditing_histogram" fitHeight="125.0" fitWidth="125.0" layoutX="415.0" layoutY="355.0" pickOnBounds="true" preserveRatio="true" />
                      </children></AnchorPane>
             </content>
           </Tab>

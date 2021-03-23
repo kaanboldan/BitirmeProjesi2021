@@ -61,12 +61,14 @@ public class ImageEditing {
    public Mat slider1(Mat src, double value) {
       Mat dest = new Mat(src.rows(), src.cols(), src.type());
       src.convertTo(dest, -1, 1, value);
+      Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
       return dest;
    }
    public Mat slider2(Mat src, double value) {
       Mat dest = new Mat(src.rows(), src.cols(), src.type());
       Imgproc.GaussianBlur(src, dest, new Size(0, 0), 10);
       Core.addWeighted(src, value, dest, -0.5, 0, dest);
+      Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
       return dest;
    }
    public Mat slider3(Mat src, double value) {
@@ -100,8 +102,8 @@ public class ImageEditing {
       Imgproc.calcHist(images.subList(1, 2), channels, new Mat(), hist_g, histSize, histRange, false);
       Imgproc.calcHist(images.subList(2, 3), channels, new Mat(), hist_r, histSize, histRange, false);
 
-      int hist_w = 150; 
-      int hist_h = 150; 
+      int hist_w = 125; 
+      int hist_h = 125; 
       int bin_w = (int) Math.round(hist_w / histSize.get(0, 0)[0]);
 
       Mat histImage = new Mat(hist_h, hist_w, CvType.CV_8UC3, new Scalar(0, 0, 0));
