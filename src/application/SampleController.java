@@ -25,6 +25,10 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
+
+import org.opencv.core.MatOfFloat;
+import org.opencv.core.MatOfInt;
+
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
@@ -67,13 +71,16 @@ public class SampleController {
     private List < Mat > planes;
     private Mat complexImage;
 
+    ImageEditing a =new ImageEditing();
+    
+    
     Date dNow = new Date();
     SimpleDateFormat ft =
         new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss");
     String date = ft.format(dNow).toString();
-
-    void init() {
-        //init çalýþtý
+    @FXML
+    void initialize() {
+        System.out.println("init calisti");
         this.image = new Mat();
         this.planes = new ArrayList < > ();
 
@@ -162,6 +169,7 @@ public class SampleController {
             return null;
         }
     }
+    
     private void updateImageView(ImageView view, Image image) {
         onFXThread(view.imageProperty(), image);
     }
@@ -267,16 +275,13 @@ public class SampleController {
     private Slider imageEditing_slider4;
 
     @FXML
-    private Slider imageEditing_slider5;
-
-    @FXML
-    private Slider imageEditing_slider6;
-
-    @FXML
     private Button imageEditing_LoadButton;
 
     @FXML
     private Button imageEditing_SaveImageButton;
+    
+    @FXML
+    private ImageView imageEditing_histogram;
 
     @FXML
     void imageEditingLoad_Button_click(ActionEvent event) {
@@ -288,7 +293,7 @@ public class SampleController {
             this.updateImageView(imageEditing_currentImage, mat2Image(this.image));
             //this.Recognition_Image.setFitWidth(250);
             this.Recognition_Image.setPreserveRatio(true);
-            Imgcodecs.imwrite("C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\\\cache\\imagedit\\resim1.png", image);
+            Imgcodecs.imwrite("/mnt/cache/resim2.png", image);
             imageEditing_slider1.setDisable(false);
             imageEditing_slider1.setShowTickLabels(true);
             imageEditing_slider1.setMax(100);
@@ -303,10 +308,8 @@ public class SampleController {
             imageEditing_slider4.setMax(3);
             imageEditing_slider4.setMin(0);
             imageEditing_SaveImageButton.setDisable(false);
+            this.showHistogram(image);
 
-            imageEditing_slider5.setDisable(false);
-
-            imageEditing_slider6.setDisable(false);
             System.out.println("Resim kaydedildi");
         }
 
@@ -315,34 +318,24 @@ public class SampleController {
     @FXML
     void imageEditing_slider1_ondrag(MouseEvent event) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        //Reading the Image from the file
-        Mat src = this.image;
-        //Creating an empty matrix
-        Mat dest = new Mat(src.rows(), src.cols(), src.type());
-        //Increasing the brightness of an image
-        src.convertTo(dest, -1, 1, imageEditing_slider1.getValue());
-        // Writing the image
+        Mat dest=a.slider1(this.image,imageEditing_slider1.getValue());
         updateImageView(imageEditing_currentImage, mat2Image(dest));
-        Imgcodecs.imwrite("C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\\\cache\\imagedit\\sonuc.png", dest);
+        Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
     }
 
     @FXML
     void imageEditing_slider2_ondrag(MouseEvent event) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        Mat src = this.image;
-
-        Mat dest = new Mat(src.rows(), src.cols(), src.type());
-        Imgproc.GaussianBlur(src, dest, new Size(0, 0), 10);
-        Core.addWeighted(src, imageEditing_slider2.getValue(), dest, -0.5, 0, dest);
+        Mat dest=a.slider2(image, imageEditing_slider2.getValue());
         updateImageView(imageEditing_currentImage, mat2Image(dest));
-        Imgcodecs.imwrite("C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\\\cache\\imagedit\\sonuc.png", dest);
+        Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
 
     }
     @FXML
     void imageEditing_slider3_ondrag(MouseEvent event) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         if (imageEditing_slider3.getValue() % 2 == 1) {
-            System.out.println("çalýþtý");
+            System.out.println("Ã§alÃ½Ã¾tÃ½");
             Mat src = image;
             //Creating destination matrix
             Mat dst = new Mat(src.rows(), src.cols(), src.type());
@@ -350,7 +343,7 @@ public class SampleController {
 
             Imgproc.GaussianBlur(src, dst, new Size(imageEditing_slider3.getValue(), imageEditing_slider3.getValue()), 0);
             //Converting matrix to JavaFX writable image
-            Imgcodecs.imwrite("C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\\\cache\\imagedit\\sonuc.png", dst);
+            Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dst);
             updateImageView(imageEditing_currentImage, mat2Image(dst));
         }
 
@@ -366,18 +359,76 @@ public class SampleController {
         src.convertTo(dest, -1, imageEditing_slider4.getValue(), 0);
         // Writing the image
         updateImageView(imageEditing_currentImage, mat2Image(dest));
-        Imgcodecs.imwrite("C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\\\cache\\imagedit\\sonuc.png", dest);
+        Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
     }
-
-    @FXML
-    void imageEditing_slider5_ondrag(MouseEvent event) {
-
-    }
-
-    @FXML
-    void imageEditing_slider6_ondrag(MouseEvent event) {
-
-    }
+    //TODO: Adam akÄ±llÄ± Ã§alÄ±ÅŸmÄ±yor hata 
+   private void showHistogram(Mat frame)
+	{
+		// split the frames in multiple images
+		List<Mat> images = new ArrayList<Mat>();
+		Core.split(frame, images);
+		
+		// set the number of bins at 256
+		MatOfInt histSize = new MatOfInt(256);
+		// only one channel
+		MatOfInt channels = new MatOfInt(0);
+		// set the ranges
+		MatOfFloat histRange = new MatOfFloat(0, 256);
+		
+		// compute the histograms for the B, G and R components
+		Mat hist_b = new Mat();
+		Mat hist_g = new Mat();
+		Mat hist_r = new Mat();
+		
+		// B component or gray image
+		Imgproc.calcHist(images.subList(0, 1), channels, new Mat(), hist_b, histSize, histRange, false);
+		
+		// G and R components (if the image is not in gray scale)
+		
+		
+			Imgproc.calcHist(images.subList(1, 2), channels, new Mat(), hist_g, histSize, histRange, false);
+			Imgproc.calcHist(images.subList(2, 3), channels, new Mat(), hist_r, histSize, histRange, false);
+		
+		
+		// draw the histogram
+		int hist_w = 150; // width of the histogram image
+		int hist_h = 150; // height of the histogram image
+		int bin_w = (int) Math.round(hist_w / histSize.get(0, 0)[0]);
+		
+		Mat histImage = new Mat(hist_h, hist_w, CvType.CV_8UC3, new Scalar(0, 0, 0));
+		// normalize the result to [0, histImage.rows()]
+		Core.normalize(hist_b, hist_b, 0, histImage.rows(), Core.NORM_MINMAX, -1, new Mat());
+		
+		// for G and R components
+		
+		
+			Core.normalize(hist_g, hist_g, 0, histImage.rows(), Core.NORM_MINMAX, -1, new Mat());
+			Core.normalize(hist_r, hist_r, 0, histImage.rows(), Core.NORM_MINMAX, -1, new Mat());
+		
+		
+		// effectively draw the histogram(s)
+		for (int i = 1; i < histSize.get(0, 0)[0]; i++)
+		{
+			// B component or gray image
+			Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_b.get(i - 1, 0)[0])),
+					new Point(bin_w * (i), hist_h - Math.round(hist_b.get(i, 0)[0])), new Scalar(255, 0, 0), 2, 8, 0);
+			// G and R components (if the image is not in gray scale)
+			
+			
+				Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_g.get(i - 1, 0)[0])),
+						new Point(bin_w * (i), hist_h - Math.round(hist_g.get(i, 0)[0])), new Scalar(0, 255, 0), 2, 8,
+						0);
+				Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_r.get(i - 1, 0)[0])),
+						new Point(bin_w * (i), hist_h - Math.round(hist_r.get(i, 0)[0])), new Scalar(0, 0, 255), 2, 8,
+						0);
+			
+		}
+		
+		// display the histogram...
+		Image histImg = mat2Image(histImage);
+		updateImageView(imageEditing_histogram, histImg);
+		
+	}
 
     @FXML
     void imageEditing_SaveImageButton_click(ActionEvent event) {
@@ -387,10 +438,9 @@ public class SampleController {
 
         System.out.println(selectedDirectory.getAbsolutePath());
         try {
-            image = Imgcodecs.imread("C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\\\cache\\imagedit\\sonuc.png");
+            image = Imgcodecs.imread("mnt/cache/imagEditSonuc.png");
             Imgcodecs.imwrite(selectedDirectory.getAbsolutePath() + "sonuc.jpg", image);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -425,14 +475,14 @@ public class SampleController {
             this.updateImageView(Recognition_Image, mat2Image(this.image));
             //this.Recognition_Image.setFitWidth(250);
             this.Recognition_Image.setPreserveRatio(true);
-            Imgcodecs.imwrite("C:/Users/skaanb/eclipse-workspace/BitirmeProjesi2021/mnt/cache/facerecognition/img/source/1.png", image);
+            Imgcodecs.imwrite("mnt/cache/3.png", image);
             System.out.println("Resim kaydedildi");
             ObservableList < String > list = Recognition_turSelection_cb.getItems();
-            list.add("Ýnsan");
-            list.add("Kuþ");
+            list.add("Insan");
+            list.add("Kus");
             list.add("At");
             list.add("Koyun");
-            list.add("Köpek");
+            list.add("KÃ¶pek");
             Recognition_calculateButton.setDisable(false);
             Recognition_saveImageButton.setDisable(true);
         }
@@ -442,45 +492,10 @@ public class SampleController {
     void Recognition_calculate_button_click(ActionEvent event) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-        String imgFile = "C:/Users/skaanb/eclipse-workspace/BitirmeProjesi2021/mnt/cache/facerecognition/img/source/1.png";
-        Mat src = Imgcodecs.imread(imgFile);
-        String xmlFile;
-
-        xmlFile = "C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\cascade\\xml\\lbpcascade_frontalface.xml";
-        Recognition_calculateButton.setDisable(false);
-
-        if (Recognition_turSelection_cb.getValue() == "Kuþ") {
-            xmlFile = "C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\cascade\\xml\\bird.xml";
-            Recognition_calculateButton.setDisable(false);
-        }
-
-        if (Recognition_turSelection_cb.getValue() == "At") {
-            xmlFile = "C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\cascade\\xml\\horse.xml";
-            Recognition_calculateButton.setDisable(false);
-        }
-
-        if (Recognition_turSelection_cb.getValue() == "Koyun") {
-            xmlFile = "C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\cascade\\xml\\sheep.xml";
-            Recognition_calculateButton.setDisable(false);
-        }
-
-        if (Recognition_turSelection_cb.getValue() == "Köpek") {
-            xmlFile = "C:\\Users\\skaanb\\eclipse-workspace\\BitirmeProjesi2021\\mnt\\cascade\\xml\\dog.xml";
-            Recognition_calculateButton.setDisable(false);
-        }
-
-        System.out.println(Recognition_turSelection_cb.getValue());
-        CascadeClassifier cc = new CascadeClassifier(xmlFile);
-
-        MatOfRect faceDetection = new MatOfRect();
-        cc.detectMultiScale(src, faceDetection);
-        System.out.println(String.format("Detected faces: %d", faceDetection.toArray().length));
-
-        for (Rect rect: faceDetection.toArray()) {
-            Imgproc.rectangle(src, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255), 3);
-        }
+        String imgFile = "mnt/cache/3.png";
+        Mat src =a.Facerecognition(imgFile, a.xmlChanger(Recognition_turSelection_cb.getValue()));
         this.updateImageView(Recognition_Image, mat2Image(src));
-        Imgcodecs.imwrite("C:/Users/skaanb/eclipse-workspace/BitirmeProjesi2021/mnt/cache/facerecognition/img/result/1.png", src);
+        Imgcodecs.imwrite("mnt/cache/3.png", src);
         System.out.println("Image Detection Finished");
         Recognition_saveImageButton.setDisable(false);
     }
@@ -491,10 +506,9 @@ public class SampleController {
         System.out.println("save button");
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File selectedDirectory = directoryChooser.showDialog(stage);
-
-        System.out.println(selectedDirectory.getAbsolutePath());
-        image = Imgcodecs.imread("C:/Users/skaanb/eclipse-workspace/BitirmeProjesi2021/mnt/cache/facerecognition/img/result/1.png");
-        Imgcodecs.imwrite(selectedDirectory.getAbsolutePath() + "\\image1.jpg", image);
+        System.out.println(selectedDirectory.getAbsolutePath()+ "/image1");
+        image = Imgcodecs.imread("mnt/cache/3.png");
+        Imgcodecs.imwrite(selectedDirectory.getAbsolutePath() + "/image1.jpg", image);
     }
 
     //tab3 end
