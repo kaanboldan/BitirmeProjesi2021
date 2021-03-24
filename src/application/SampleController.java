@@ -34,6 +34,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
@@ -63,13 +64,15 @@ public class SampleController {
 
     @FXML
     private Button imageAdd;
+    
+    
 
     private Mat image;
     private Stage stage;
     private List < Mat > planes;
     private Mat complexImage;
 
-    ImageEditing a =new ImageEditing();
+    ImageEditing imageEditing =new ImageEditing();
     
     
     Date dNow = new Date();
@@ -81,7 +84,12 @@ public class SampleController {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         this.image = new Mat();
         this.planes = new ArrayList < > ();
-
+        imageEditing_slider1.setShowTickLabels(true);
+        imageEditing_slider1.setMax(100);
+        imageEditing_slider1.setMin(-100);
+        imageEditing_slider4.setShowTickLabels(true);
+        imageEditing_slider4.setMax(3);
+        imageEditing_slider4.setMin(0);
         System.out.println("init calisti");
 
     }
@@ -96,7 +104,7 @@ public class SampleController {
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             this.image = Imgcodecs.imread(file.getAbsolutePath(), Imgcodecs.IMREAD_GRAYSCALE);
-            this.updateImageView(image_unlock, mat2Image(this.image));
+            this.imageEditing.updateImageView(image_unlock, mat2Image(this.image));
             this.image_unlock.setFitWidth(250);
             this.image_unlock.setPreserveRatio(true);
             Imgcodecs.imwrite("C:/Users/skaanb/Desktop/image.png", image);
@@ -134,7 +142,7 @@ public class SampleController {
         Mat magnitude = this.createOptimizedMagnitude(this.complexImage);
 
         // show the result of the transformation as an image
-        this.updateImageView(image_lock, mat2Image(magnitude));
+        this.imageEditing.updateImageView(image_lock, mat2Image(magnitude));
         // set a fixed width
         this.image_lock.setFitWidth(250);
         // preserve image ratio
@@ -170,14 +178,7 @@ public class SampleController {
         }
     }
     
-    private void updateImageView(ImageView view, Image image) {
-        onFXThread(view.imageProperty(), image);
-    }
-    public static < T > void onFXThread(final ObjectProperty < T > property, final T value) {
-        Platform.runLater(() -> {
-            property.set(value);
-        });
-    }
+    
     private static BufferedImage matToBufferedImage(Mat original) {
         // init
         BufferedImage image = null;
@@ -269,7 +270,16 @@ public class SampleController {
     private Slider imageEditing_slider2;
 
     @FXML
-    private Slider imageEditing_slider3;
+    private CheckBox imageEditing_blur;
+
+    @FXML
+    private CheckBox imageEditing_B;
+
+    @FXML
+    private CheckBox imageEditing_R;
+
+    @FXML
+    private CheckBox imageEditing_G;
 
     @FXML
     private Slider imageEditing_slider4;
@@ -290,24 +300,17 @@ public class SampleController {
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             image = Imgcodecs.imread(file.getAbsolutePath());
-            this.updateImageView(imageEditing_currentImage, mat2Image(this.image));
+            this.imageEditing.updateImageView(imageEditing_currentImage, mat2Image(this.image));
             //this.Recognition_Image.setFitWidth(250);
             this.Recognition_Image.setPreserveRatio(true);
             Imgcodecs.imwrite("/mnt/cache/resim2.png", image);
             imageEditing_slider1.setDisable(false);
-            imageEditing_slider1.setShowTickLabels(true);
-            imageEditing_slider1.setMax(100);
-            imageEditing_slider1.setMin(-100);
-
             imageEditing_slider2.setDisable(false);
-
-            imageEditing_slider3.setDisable(false);
-
             imageEditing_slider4.setDisable(false);
-            imageEditing_slider4.setShowTickLabels(true);
-            imageEditing_slider4.setMax(3);
-            imageEditing_slider4.setMin(0);
-            imageEditing_SaveImageButton.setDisable(false);
+            imageEditing_R.setDisable(false);
+            imageEditing_G.setDisable(false);
+            imageEditing_B.setDisable(false);
+            
             this.showHistogram(image);
 
             System.out.println("Resim kaydedildi");
@@ -318,46 +321,72 @@ public class SampleController {
     @FXML
     void imageEditing_slider1_ondrag(MouseEvent event) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        Mat dest=a.slider1(this.image,imageEditing_slider1.getValue());
-        updateImageView(imageEditing_currentImage, mat2Image(dest));
-        this.showHistogram(image);
-
+        Mat dest=imageEditing.slider1(this.image,imageEditing_slider1.getValue());
+        imageEditing.updateImageView(imageEditing_currentImage, mat2Image(dest));
+        showHistogram(dest);
     }
 
     @FXML
     void imageEditing_slider2_ondrag(MouseEvent event) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        Mat dest=a.slider2(image, imageEditing_slider2.getValue());
-        updateImageView(imageEditing_currentImage, mat2Image(dest));
-        this.showHistogram(image);
-
+        Mat dest=imageEditing.slider2(image, imageEditing_slider2.getValue());
+        imageEditing.updateImageView(imageEditing_currentImage, mat2Image(dest));
+        showHistogram(dest);
     }
+    
     @FXML
-    void imageEditing_slider3_ondrag(MouseEvent event) {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        if (imageEditing_slider3.getValue() % 2 == 1) {
-            System.out.println("çalýþtý");
-            Mat src = image;
-            //Creating destination matrix
-            Mat dst = new Mat(src.rows(), src.cols(), src.type());
-            //Applying GaussianBlur on the Image
-
-            Imgproc.GaussianBlur(src, dst, new Size(imageEditing_slider3.getValue(), imageEditing_slider3.getValue()), 0);
-            //Converting matrix to JavaFX writable image
-            Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dst);
-            updateImageView(imageEditing_currentImage, mat2Image(dst));
-        }
-
+    void imageEditing_R_checked(ActionEvent event) {
+    	if(imageEditing_R.isSelected()==true)
+    	imageEditing.updateImageView(imageEditing_currentImage,mat2Image(imageEditing.rgbImage(image,"Red")));
+    	if(imageEditing_R.isSelected()==false)
+        	imageEditing.updateImageView(imageEditing_currentImage,mat2Image(image));
     }
+
+    @FXML
+    void imageEditing_G_checked(ActionEvent event) {
+    	if(imageEditing_G.isSelected()==true)
+        	imageEditing.updateImageView(imageEditing_currentImage,mat2Image(imageEditing.rgbImage(image,"Green")));
+        	if(imageEditing_G.isSelected()==false)
+            	imageEditing.updateImageView(imageEditing_currentImage,mat2Image(image));
+    }
+
+    @FXML
+    void imageEditing_B_checked(ActionEvent event) {
+    	if(imageEditing_B.isSelected()==true)
+        	imageEditing.updateImageView(imageEditing_currentImage,mat2Image(imageEditing.rgbImage(image,"Blue")));
+        	if(imageEditing_B.isSelected()==false)
+            	imageEditing.updateImageView(imageEditing_currentImage,mat2Image(image));
+    }
+
+   
+    @FXML
+    void imageEditing_blur_checked(ActionEvent event) {
+    	System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    	System.out.println("calisti");
+    	Mat src = image;
+    	Mat dest = new Mat(src.rows(), src.cols(), src.type());
+    	if (imageEditing_blur.isSelected()==true) {
+    		Imgproc.GaussianBlur(src, dest, new Size(25,25), 0);
+        	Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
+        	imageEditing.updateImageView(imageEditing_currentImage, mat2Image(dest));
+        	
+		}
+    	else {
+    	Imgproc.GaussianBlur(src, dest, new Size(25,25), 0);
+    	Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
+    	imageEditing.updateImageView(imageEditing_currentImage, mat2Image(dest));}
+    	showHistogram(dest);
+    }
+
+    
 
     @FXML
     void imageEditing_slider4_ondrag(MouseEvent event) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        a.slider4(image, )
-        updateImageView(imageEditing_currentImage, mat2Image(dest));
+        Mat dest=imageEditing.slider4(image,imageEditing_slider4.getValue());
+        imageEditing.updateImageView(imageEditing_currentImage, mat2Image(dest));
         Imgcodecs.imwrite("mnt/cache/imageEditSonuc.png", dest);
     }
-    //TODO: Adam akıllı çalışmıyor hata!!! 
    private void showHistogram(Mat frame)
 	{
 		List<Mat> images = new ArrayList<Mat>();
@@ -392,16 +421,13 @@ public class SampleController {
 			Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_b.get(i - 1, 0)[0])),
 					new Point(bin_w * (i), hist_h - Math.round(hist_b.get(i, 0)[0])), new Scalar(255, 0, 0), 2, 8, 0);
 			Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_g.get(i - 1, 0)[0])),
-						new Point(bin_w * (i), hist_h - Math.round(hist_g.get(i, 0)[0])), new Scalar(0, 255, 0), 2, 8,
-						0);
+						new Point(bin_w * (i), hist_h - Math.round(hist_g.get(i, 0)[0])), new Scalar(0, 255, 0), 2, 8,0);
 			Imgproc.line(histImage, new Point(bin_w * (i - 1), hist_h - Math.round(hist_r.get(i - 1, 0)[0])),
-						new Point(bin_w * (i), hist_h - Math.round(hist_r.get(i, 0)[0])), new Scalar(0, 0, 255), 2, 8,
-						0);
-			
+						new Point(bin_w * (i), hist_h - Math.round(hist_r.get(i, 0)[0])), new Scalar(0, 0, 255), 2, 8,0);
 		}
 		
 		Image histImg = mat2Image(histImage);
-		updateImageView(imageEditing_histogram, histImg);
+		imageEditing.updateImageView(imageEditing_histogram, histImg);
 		
 	}
 
@@ -447,7 +473,7 @@ public class SampleController {
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             this.image = Imgcodecs.imread(file.getAbsolutePath());
-            this.updateImageView(Recognition_Image, mat2Image(this.image));
+            this.imageEditing.updateImageView(Recognition_Image, mat2Image(this.image));
             //this.Recognition_Image.setFitWidth(250);
             this.Recognition_Image.setPreserveRatio(true);
             Imgcodecs.imwrite("mnt/cache/3.png", image);
@@ -468,8 +494,8 @@ public class SampleController {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
         String imgFile = "mnt/cache/3.png";
-        Mat src =a.Facerecognition(imgFile, a.xmlChanger(Recognition_turSelection_cb.getValue()));
-        this.updateImageView(Recognition_Image, mat2Image(src));
+        Mat src =imageEditing.Facerecognition(imgFile, imageEditing.xmlChanger(Recognition_turSelection_cb.getValue()));
+        this.imageEditing.updateImageView(Recognition_Image, mat2Image(src));
         Imgcodecs.imwrite("mnt/cache/3.png", src);
         System.out.println("Image Detection Finished");
         Recognition_saveImageButton.setDisable(false);

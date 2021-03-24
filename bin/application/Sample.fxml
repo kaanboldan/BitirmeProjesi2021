@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tab?>
@@ -46,12 +47,15 @@
                      <children>
                         <ImageView fx:id="imageEditing_currentImage" fitHeight="270.0" fitWidth="480.0" layoutX="60.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" />
                         <Slider fx:id="imageEditing_slider1" disable="true" layoutX="35.0" layoutY="403.0" onDragDetected="#imageEditing_slider1_ondrag" />
-                        <Slider fx:id="imageEditing_slider2" disable="true" layoutX="217.0" layoutY="403.0" onDragDetected="#imageEditing_slider2_ondrag" />                        
-                        <Slider fx:id="imageEditing_slider3" blockIncrement="2.0" disable="true" layoutX="217.0" layoutY="454.0" max="25.0" min="1.0" minorTickCount="1" onDragDetected="#imageEditing_slider3_ondrag" showTickLabels="true" showTickMarks="true" snapToTicks="true" />     
-                        <Slider fx:id="imageEditing_slider4" disable="true" layoutX="35.0" layoutY="454.0" onDragDetected="#imageEditing_slider4_ondrag" />
+                        <Slider fx:id="imageEditing_slider2" disable="true" layoutX="200.0" layoutY="403.0" onDragDetected="#imageEditing_slider2_ondrag" />     
+                        <Slider fx:id="imageEditing_slider4" disable="true" layoutX="35.0" layoutY="460.0" onDragDetected="#imageEditing_slider4_ondrag" />
                         <Button fx:id="imageEditing_LoadButton" layoutX="123.0" layoutY="508.0" mnemonicParsing="false" onAction="#imageEditingLoad_Button_click" text="Resim Yükle" />
                         <Button fx:id="imageEditing_SaveImageButton" disable="true" layoutX="348.0" layoutY="508.0" mnemonicParsing="false" onAction="#imageEditing_SaveImageButton_click" text="Kaydet" />
                         <ImageView fx:id="imageEditing_histogram" fitHeight="125.0" fitWidth="125.0" layoutX="415.0" layoutY="355.0" pickOnBounds="true" preserveRatio="true" />
+                        <CheckBox fx:id="imageEditing_blur" disable="true" layoutX="200.0" layoutY="428.0" mnemonicParsing="false" onAction="#imageEditing_blur_checked" text="Net / Bulanık" />
+                        <CheckBox fx:id="imageEditing_B" disable="true" layoutX="280.0" layoutY="460.0" mnemonicParsing="false" onAction="#imageEditing_B_checked" text="B" />
+                        <CheckBox fx:id="imageEditing_R" disable="true" layoutX="200.0" layoutY="460.0" mnemonicParsing="false" onAction="#imageEditing_R_checked" text="R" />
+                        <CheckBox fx:id="imageEditing_G" disable="true" layoutX="240.0" layoutY="460.0" mnemonicParsing="false" onAction="#imageEditing_G_checked" text="G" />
                      </children></AnchorPane>
             </content>
           </Tab>

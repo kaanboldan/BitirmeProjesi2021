@@ -19,8 +19,11 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class ImageEditing {
 
@@ -127,6 +130,30 @@ public class ImageEditing {
       return histImage;
 
    }
+public static Mat rgbImage(Mat src,String ColorChoice) {
+	
+	
+	List<Mat> channels = new ArrayList<Mat>(3);
+	Core.split(src, channels);
+	if (ColorChoice=="Blue") { 
+		return channels.get(0);
+	}
+	if(ColorChoice=="Red")
+		return channels.get(1);
+	if(ColorChoice=="Green")
+		return channels.get(2);
+	return null;
+
+	// Create an zero pixel image for filling purposes - will become clear later
+	// Also create container images for B G R channels as colour images
+	//Mat empty_image = Mat.zeros(src.rows(), src.cols(),CvType.CV_8UC1);
+	//Mat result_blue(src.rows(), src.cols(),CvType.CV_8UC1); // notice the 3 channels here!
+	//Mat result_green(src.rows(), src.cols(),CvType.CV_8UC1); // notice the 3 channels here!
+	//Mat result_red(src.rows(), src.cols(),CvType.CV_8UC1); // notice the 3 channels here!
+
+}
+   
+   
    public static Image mat2Image(Mat frame) {
       try {
          return SwingFXUtils.toFXImage(matToBufferedImage(frame), null);
@@ -154,5 +181,12 @@ public class ImageEditing {
 
       return image;
    }
-
+   public void updateImageView(ImageView view, Image image) {
+       onFXThread(view.imageProperty(), image);
+   }
+   public static < T > void onFXThread(final ObjectProperty < T > property, final T value) {
+       Platform.runLater(() -> {
+           property.set(value);
+       });
+   }
 }
