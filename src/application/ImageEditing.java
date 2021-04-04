@@ -2,6 +2,7 @@ package application;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -144,12 +145,7 @@ public static Mat rgbImage(Mat src,String ColorChoice) {
 		return channels.get(2);
 	return null;
 
-	// Create an zero pixel image for filling purposes - will become clear later
-	// Also create container images for B G R channels as colour images
-	//Mat empty_image = Mat.zeros(src.rows(), src.cols(),CvType.CV_8UC1);
-	//Mat result_blue(src.rows(), src.cols(),CvType.CV_8UC1); // notice the 3 channels here!
-	//Mat result_green(src.rows(), src.cols(),CvType.CV_8UC1); // notice the 3 channels here!
-	//Mat result_red(src.rows(), src.cols(),CvType.CV_8UC1); // notice the 3 channels here!
+	
 
 }
    
@@ -184,9 +180,18 @@ public static Mat rgbImage(Mat src,String ColorChoice) {
    public void updateImageView(ImageView view, Image image) {
        onFXThread(view.imageProperty(), image);
    }
-   public static < T > void onFXThread(final ObjectProperty < T > property, final T value) {
+   public static < T > void onFXThread(final ObjectProperty < T > property, final T value) 
+   {
        Platform.runLater(() -> {
            property.set(value);
        });
+   }
+   public static void FileDeleter(String filename,int val,String extension) {
+	  for (int i = 0; i <val ; i++) {
+		  File myObj = new File(filename+i+extension);
+		  myObj.delete();
+	}		  
+	  System.out.println("all deleted...");
+
    }
 }

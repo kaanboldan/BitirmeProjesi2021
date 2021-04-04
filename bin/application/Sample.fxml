@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SampleController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/15.0.1" fx:controller="application.SampleController">
    <children>
       <TabPane prefHeight="600.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -18,22 +18,23 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="364.0">
                      <children>
-                        <Button fx:id="lock_button" layoutX="195.0" layoutY="504.0" mnemonicParsing="false" onAction="#lock_button_click" text="Lock">
+                        <Button fx:id="lock_button" disable="true" layoutX="195.0" layoutY="504.0" mnemonicParsing="false" onAction="#lock_button_click" text="Lock">
                            <font>
                               <Font size="25.0" />
                            </font></Button>
-                        <Button fx:id="unlock_button" layoutX="289.0" layoutY="504.0" mnemonicParsing="false" onAction="#unlock_button_click" text="Unlock">
+                        <Button fx:id="unlock_button" disable="true" layoutX="289.0" layoutY="504.0" mnemonicParsing="false" onAction="#unlock_button_click" text="Unlock">
                            <font>
                               <Font size="25.0" />
                            </font></Button>
                         <ImageView fx:id="image_unlock" fitHeight="150.0" fitWidth="266.0" layoutX="14.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true" />
                         <ImageView fx:id="image_lock" fitHeight="150.0" fitWidth="266.0" layoutX="314.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="image_unlocked" fitHeight="150.0" fitWidth="266.0" layoutX="314.0" layoutY="269.0" pickOnBounds="true" preserveRatio="true" />
                         <Button fx:id="imageAdd" layoutX="29.0" layoutY="504.0" mnemonicParsing="false" onAction="#imageAdd_btn" text="Resim Ekle">
                            <font>
                               <Font size="25.0" />
                            </font>
                         </Button>
-                        <Button fx:id="image_save" layoutX="416.0" layoutY="504.0" mnemonicParsing="false" onAction="#imageSave_btn" text="Kaydet">
+                        <Button fx:id="image_save" disable="true" layoutX="416.0" layoutY="504.0" mnemonicParsing="false" onAction="#imageSave_btn" text="Kaydet">
                            <font>
                               <Font size="25.0" />
                            </font>
