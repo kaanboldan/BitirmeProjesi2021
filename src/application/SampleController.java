@@ -3,6 +3,7 @@ package application;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,8 +12,15 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.FileImageOutputStream;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -21,6 +29,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -28,16 +37,20 @@ import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfInt;
 
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.transform.Scale;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -86,15 +99,38 @@ public class SampleController {
   @FXML
   void initialize() {
     System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    
     this.complexImage = new Mat();
     this.image = new Mat();
     this.planes = new ArrayList < > ();
+    
     imageEditing_slider1.setShowTickLabels(true);
     imageEditing_slider1.setMax(100);
     imageEditing_slider1.setMin(-100);
     imageEditing_slider4.setShowTickLabels(true);
     imageEditing_slider4.setMax(3);
     imageEditing_slider4.setMin(0);
+    
+    ImageResizer_Scale.getItems().add(5.0);
+    ImageResizer_Scale.getItems().add(10.0);
+    ImageResizer_Scale.getItems().add(15.0);
+    ImageResizer_Scale.getItems().add(20.0);
+    ImageResizer_Scale.getItems().add(25.0);
+    ImageResizer_Scale.getItems().add(30.0);
+    ImageResizer_Scale.getItems().add(35.0);
+    ImageResizer_Scale.getItems().add(40.0);
+    ImageResizer_Scale.getItems().add(45.0);
+    ImageResizer_Scale.getItems().add(50.0);
+    ImageResizer_Scale.getItems().add(55.0);
+    ImageResizer_Scale.getItems().add(60.0);
+    ImageResizer_Scale.getItems().add(65.0);
+    ImageResizer_Scale.getItems().add(70.0);
+    ImageResizer_Scale.getItems().add(75.0);
+    ImageResizer_Scale.getItems().add(80.0);
+    ImageResizer_Scale.getItems().add(85.0);
+    ImageResizer_Scale.getItems().add(90.0);
+    ImageResizer_Scale.getItems().add(95.0);
+    
     System.out.println("init calisti");
 
   }
@@ -129,7 +165,9 @@ public class SampleController {
     System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     Random rand = new Random(); 
     int upperbound = 25;
-    this.int_random = rand.nextInt(upperbound); 
+    //this.int_random = rand.nextInt(upperbound); 
+    this.int_random = 1;
+
     int ls = 1;
     for (int l = 0; l <= this.int_random; l++) {
       System.out.print(l + ".kitlenme adım |");
@@ -170,12 +208,10 @@ public class SampleController {
 	  int us = this.int_random;
 	  System.out.println("us: "+us);
 	  
-	  for (int u = this.int_random ; u >= 0; u--,us--) {
+	  for (int u = this.int_random++ ; u >= 0; u--,us--) {
 		 
       System.out.print(u + ".açma adım |");
       System.out.print(us + ".açma durum |");
-
-      this.planes = new ArrayList < > ();
       
       Mat imageLock = Imgcodecs.imread("mnt/locking/Lockimage" + us + ".png");
       Core.idft(imageLock, imageLock);
@@ -540,4 +576,195 @@ public class SampleController {
   }
 
   //tab3 end
+  //tab4 start
+  @FXML
+  private ImageView ImageResizer_Image;
+
+  @FXML
+  private Label ImageResizer_Width;
+  
+  @FXML
+  private Label ImageResizer_Height1;
+
+  @FXML
+  private Label ImageResizer_Height;
+
+  @FXML
+  private Button ImageResizer_Load;
+
+  @FXML
+  private Button ImageResizer_Resize;
+
+  @FXML
+  private Button ImageResizer_Compress;
+  
+  @FXML
+  private ChoiceBox<Double> ImageResizer_Scale;
+
+  String imageAdrress;
+  int fileSize;
+  @FXML
+  void ImageResizer_Compress_Click(ActionEvent event) throws IOException {
+	  String srcImg = this.imageAdrress;
+	  System.out.println(imageAdrress);
+	  System.out.println(this.imageAdrress);
+      int dotpos = srcImg.lastIndexOf(".");
+      String extension = srcImg.substring(dotpos);
+      String destImg = srcImg.substring(0, dotpos) + "_compressed" + extension;
+      System.out.println(extension);
+      reduceImageQuality(srcImg, destImg,50);
+
+  }
+  private void reduceImageQuality(String srcImg, String destImg, int sizeThreshold) throws IOException {
+
+      Task<String> task = new Task<String>() {
+          @Override
+          protected String call() throws Exception {
+              float quality = 1.0f;
+
+              File file = new File(srcImg);
+              long fileSize = file.length();
+
+              if (fileSize / 1024 <= sizeThreshold) {
+                  return "Image file size is under threshold";
+              }
+
+              Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpeg");
+              ImageWriter writer = iter.next();
+              ImageWriteParam params = writer.getDefaultWriteParam();
+              params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+
+              FileInputStream inputStream = new FileInputStream(file);
+              BufferedImage originalImage = ImageIO.read(inputStream);
+              IIOImage image = new IIOImage(originalImage, null, null);
+
+              double percent = 0.1f;
+
+              while (fileSize / 1024 > sizeThreshold) {
+                  if (percent >= quality) {
+                      percent = percent * 0.1f;
+                  }
+
+                  quality -= percent;
+
+                  File fileOut = new File(destImg);
+                  if (fileOut.exists()) {
+                      fileOut.delete();
+                  }
+
+                  FileImageOutputStream output = new FileImageOutputStream(fileOut);
+                  writer.setOutput(output);
+                  params.setCompressionQuality(quality);
+                  writer.write(null, image, params);
+
+                  File fileOut2 = new File(destImg);
+                  long newFileSize = fileOut2.length();
+                  if (newFileSize == fileSize) {
+                      // cannot reduce more, return
+                      break;
+                  } else {
+                      fileSize = newFileSize;
+                  }
+
+                  System.out.println("Quality = " + quality + ", New file size = " + fileSize / 1024 + "KB");
+                  output.close();
+              }
+
+              writer.dispose();
+              return "DONE!";
+          }
+      };
+
+
+      new Thread(task).start();
+
+  }
+ 
+
+
+  @FXML
+  void ImageResizer_Load_Click(ActionEvent event) {
+	  FileChooser fileChooser = new FileChooser();
+	    fileChooser.setTitle("Open Resource File");
+	    File file = fileChooser.showOpenDialog(stage);
+	    if (file != null) {
+	      image = Imgcodecs.imread(file.getAbsolutePath());
+	      this.imageEditing.updateImageView(ImageResizer_Image, mat2Image(this.image));
+	      this.imageAdrress=file.toString();
+	      Long a=file.length();
+	      this.fileSize=a.intValue();
+	      
+
+	      Imgcodecs.imwrite("/mnt/cache/resim2.png", image);
+	      
+	      
+	    }
+	 
+  }
+
+  @FXML
+  void ImageResizer_Resize_Click(ActionEvent event) {
+      System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
+	  
+	  Mat src = Imgcodecs.imread("/mnt/cache/image0.png");
+      Mat dst = new Mat();
+      
+      
+      
+      if(ImageResizer_Scale.getValue()==5)
+          Imgproc.resize(src, dst, new Size(5*src.rows()/100, 5*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==10)
+          Imgproc.resize(src, dst, new Size(10*src.rows()/100, 10*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==15)
+          Imgproc.resize(src, dst, new Size(15*src.rows()/100, 15*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==20)
+          Imgproc.resize(src, dst, new Size(20*src.rows()/100, 20*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==25)
+          Imgproc.resize(src, dst, new Size(25*src.rows()/100, 25*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==30)
+          Imgproc.resize(src, dst, new Size(30*src.rows()/100, 30*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==35)
+          Imgproc.resize(src, dst, new Size(35*src.rows()/100, 35*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==40)
+          Imgproc.resize(src, dst, new Size(40*src.rows()/100, 40*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==45)
+          Imgproc.resize(src, dst, new Size(45*src.rows()/100, 45*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==50)
+          Imgproc.resize(src, dst, new Size(50*src.rows()/2, 50*src.rows()/2), 0, 0,Imgproc.INTER_AREA);
+      if(ImageResizer_Scale.getValue()==55)
+          Imgproc.resize(src, dst, new Size(55*src.rows()/100, 55*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==60)
+          Imgproc.resize(src, dst, new Size(60*src.rows()/100,60 *src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==65)
+          Imgproc.resize(src, dst, new Size(65*src.rows()/100, 65*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==70)
+          Imgproc.resize(src, dst, new Size(70*src.rows()/100,70 *src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==75)
+          Imgproc.resize(src, dst, new Size(75*src.rows()/100, 75*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==80)
+          Imgproc.resize(src, dst, new Size(80*src.rows()/100, 80*src.rows()/100), 0, 0,Imgproc.INTER_AREA);  
+      if(ImageResizer_Scale.getValue()==85)
+          Imgproc.resize(src, dst, new Size(85*src.rows()/100, 85*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==90)
+          Imgproc.resize(src, dst, new Size(90*src.rows()/100, 90*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      if(ImageResizer_Scale.getValue()==95)
+          Imgproc.resize(src, dst, new Size(95*src.rows()/100, 95*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+      
+      
+      Imgcodecs.imwrite("/mnt/cache/resim2.png", dst);
+      this.imageEditing.updateImageView(ImageResizer_Image, mat2Image(this.image));
+      
+      double height =ImageResizer_Image.getFitHeight();
+      double width = ImageResizer_Image.getFitWidth();
+     
+      String sHeight=String.valueOf(height);  
+      String sWidth=String.valueOf(width);  
+
+      ImageResizer_Height.setText(sHeight);
+      ImageResizer_Width.setText(sWidth);
+
+
+  }
+
+  //tab 4 end 
 }
