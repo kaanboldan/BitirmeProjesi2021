@@ -110,6 +110,12 @@ public class SampleController {
     imageEditing_slider4.setShowTickLabels(true);
     imageEditing_slider4.setMax(3);
     imageEditing_slider4.setMin(0);
+    ObservableList < String > list = Recognition_turSelection_cb.getItems();
+    list.add("Insan");
+    list.add("Kus");
+    list.add("At");
+    list.add("Koyun");
+    list.add("Köpek");
     
     ImageResizer_Scale.getItems().add(5.0);
     ImageResizer_Scale.getItems().add(10.0);
@@ -130,7 +136,7 @@ public class SampleController {
     ImageResizer_Scale.getItems().add(85.0);
     ImageResizer_Scale.getItems().add(90.0);
     ImageResizer_Scale.getItems().add(95.0);
-    
+    ImageResizer_Resize.setDisable(true);
     System.out.println("init calisti");
 
   }
@@ -541,12 +547,7 @@ public class SampleController {
       this.Recognition_Image.setPreserveRatio(true);
       Imgcodecs.imwrite("mnt/cache/3.png", image);
       System.out.println("Resim kaydedildi");
-      ObservableList < String > list = Recognition_turSelection_cb.getItems();
-      list.add("Insan");
-      list.add("Kus");
-      list.add("At");
-      list.add("Koyun");
-      list.add("Köpek");
+    
       Recognition_calculateButton.setDisable(false);
       Recognition_saveImageButton.setDisable(true);
     }
@@ -611,8 +612,14 @@ public class SampleController {
       int dotpos = srcImg.lastIndexOf(".");
       String extension = srcImg.substring(dotpos);
       String destImg = srcImg.substring(0, dotpos) + "_compressed" + extension;
-      System.out.println(extension);
-      reduceImageQuality(srcImg, destImg,50);
+      int sonuc=fileSize/1024/8;
+      System.out.println("dosyaboyutu"+sonuc);
+
+      int[] cbIndex= {5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95};
+      sonuc=sonuc/cbIndex[ImageResizer_Scale.getSelectionModel().getSelectedIndex()];
+      System.out.println(cbIndex[ImageResizer_Scale.getSelectionModel().getSelectedIndex()]);
+      
+      reduceImageQuality(srcImg, destImg,sonuc);
 
   }
   private void reduceImageQuality(String srcImg, String destImg, int sizeThreshold) throws IOException {
@@ -653,6 +660,8 @@ public class SampleController {
                   }
 
                   FileImageOutputStream output = new FileImageOutputStream(fileOut);
+        	      Mat finalImage = Imgcodecs.imread(destImg);
+                  imageEditing.updateImageView(ImageResizer_Image, mat2Image(finalImage));
                   writer.setOutput(output);
                   params.setCompressionQuality(quality);
                   writer.write(null, image, params);
@@ -669,6 +678,7 @@ public class SampleController {
                   System.out.println("Quality = " + quality + ", New file size = " + fileSize / 1024 + "KB");
                   output.close();
               }
+              
 
               writer.dispose();
               return "DONE!";
@@ -693,7 +703,7 @@ public class SampleController {
 	      this.imageAdrress=file.toString();
 	      Long a=file.length();
 	      this.fileSize=a.intValue();
-	      
+
 
 	      Imgcodecs.imwrite("/mnt/cache/resim2.png", image);
 	      
@@ -710,58 +720,61 @@ public class SampleController {
       Mat dst = new Mat();
       
       
+          
       
       if(ImageResizer_Scale.getValue()==5)
-          Imgproc.resize(src, dst, new Size(5*src.rows()/100, 5*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(5*src.rows()/100, 5*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==10)
-          Imgproc.resize(src, dst, new Size(10*src.rows()/100, 10*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(10*src.rows()/100, 10*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==15)
-          Imgproc.resize(src, dst, new Size(15*src.rows()/100, 15*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(15*src.rows()/100, 15*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==20)
-          Imgproc.resize(src, dst, new Size(20*src.rows()/100, 20*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(20*src.rows()/100, 20*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==25)
-          Imgproc.resize(src, dst, new Size(25*src.rows()/100, 25*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(25*src.rows()/100, 25*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==30)
-          Imgproc.resize(src, dst, new Size(30*src.rows()/100, 30*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(30*src.rows()/100, 30*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==35)
-          Imgproc.resize(src, dst, new Size(35*src.rows()/100, 35*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(35*src.rows()/100, 35*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==40)
-          Imgproc.resize(src, dst, new Size(40*src.rows()/100, 40*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(40*src.rows()/100, 40*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==45)
-          Imgproc.resize(src, dst, new Size(45*src.rows()/100, 45*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(45*src.rows()/100, 45*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==50)
-          Imgproc.resize(src, dst, new Size(50*src.rows()/2, 50*src.rows()/2), 0, 0,Imgproc.INTER_AREA);
+          Imgproc.resize(src, dst, new Size(50*src.rows()/2, 50*src.cols()/2), 0, 0,Imgproc.INTER_AREA);
       if(ImageResizer_Scale.getValue()==55)
-          Imgproc.resize(src, dst, new Size(55*src.rows()/100, 55*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(55*src.rows()/100, 55*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==60)
-          Imgproc.resize(src, dst, new Size(60*src.rows()/100,60 *src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(60*src.rows()/100,60 *src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==65)
-          Imgproc.resize(src, dst, new Size(65*src.rows()/100, 65*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(65*src.rows()/100, 65*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==70)
-          Imgproc.resize(src, dst, new Size(70*src.rows()/100,70 *src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(70*src.rows()/100,70 *src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==75)
-          Imgproc.resize(src, dst, new Size(75*src.rows()/100, 75*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(75*src.rows()/100, 75*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==80)
-          Imgproc.resize(src, dst, new Size(80*src.rows()/100, 80*src.rows()/100), 0, 0,Imgproc.INTER_AREA);  
+          Imgproc.resize(src, dst, new Size(80*src.rows()/100, 80*src.cols()/100), 0, 0,Imgproc.INTER_AREA);  
       if(ImageResizer_Scale.getValue()==85)
-          Imgproc.resize(src, dst, new Size(85*src.rows()/100, 85*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(85*src.rows()/100, 85*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==90)
-          Imgproc.resize(src, dst, new Size(90*src.rows()/100, 90*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(90*src.rows()/100, 90*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==95)
-          Imgproc.resize(src, dst, new Size(95*src.rows()/100, 95*src.rows()/100), 0, 0,Imgproc.INTER_AREA);      
+          Imgproc.resize(src, dst, new Size(95*src.rows()/100, 95*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       
       
+
       Imgcodecs.imwrite("/mnt/cache/resim2.png", dst);
       this.imageEditing.updateImageView(ImageResizer_Image, mat2Image(this.image));
       
-      double height =ImageResizer_Image.getFitHeight();
-      double width = ImageResizer_Image.getFitWidth();
+      double height =src.rows();
+      double width = src.cols();
      
       String sHeight=String.valueOf(height);  
       String sWidth=String.valueOf(width);  
 
       ImageResizer_Height.setText(sHeight);
       ImageResizer_Width.setText(sWidth);
+
 
 
   }

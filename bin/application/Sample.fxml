@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SampleController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0"  xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SampleController">
    <children>
       <TabPane prefHeight="600.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -86,7 +86,7 @@
                         <Button fx:id="ImageResizer_Load" layoutX="362.0" layoutY="395.0" mnemonicParsing="false" onAction="#ImageResizer_Load_Click" prefHeight="25.0" prefWidth="158.0" text="Resim Yükle" />
                         <Button fx:id="ImageResizer_Resize" layoutX="362.0" layoutY="429.0" mnemonicParsing="false" onAction="#ImageResizer_Resize_Click" text="Resmi Yeniden Boyutlandır" />
                         <Button fx:id="ImageResizer_Compress" layoutX="362.0" layoutY="463.0" mnemonicParsing="false" onAction="#ImageResizer_Compress_Click" prefHeight="25.0" prefWidth="160.0" text="Resmi Sıkıştır" />
-                        <ChoiceBox fx:id="ImageResizer_Scale" layoutX="75.0" layoutY="395.0"  prefWidth="150.0" />
+                        <ChoiceBox fx:id="ImageResizer_Scale" layoutX="75.0" layoutY="395.0" prefWidth="150.0" />
                         <Label fx:id="ImageResizer_Height1" layoutX="30.0" layoutY="399.0" prefHeight="17.0" prefWidth="55.0" text="Yüzde" />
                      </children>
           </AnchorPane>
