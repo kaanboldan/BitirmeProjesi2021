@@ -69,7 +69,6 @@
                         <Button fx:id="Recognition_calculateButton" layoutX="360.0" layoutY="505.0" mnemonicParsing="false" onAction="#Recognition_calculate_button_click" text="Hesapla" />
                         <Button fx:id="Recognition_loadImageButton" layoutX="71.0" layoutY="505.0" mnemonicParsing="false" onAction="#Recognition_loadImage_button_click" text="Resim Yükle" />
                         <ImageView fx:id="Recognition_Image" fitHeight="384.0" fitWidth="559.0" layoutX="21.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
-                        <ChoiceBox fx:id="Recognition_turSelection_cb" layoutX="175.0" layoutY="505.0" prefWidth="150.0" />
                         <Button fx:id="Recognition_saveImageButton" layoutX="463.0" layoutY="505.0" mnemonicParsing="false" onAction="#Recognition_saveImageButton_click" text="Resmi Kaydet" />
                      </children></AnchorPane>
             </content>

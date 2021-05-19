@@ -28,22 +28,7 @@ import javafx.scene.image.ImageView;
 
 public class ImageEditing {
 
-   public String xmlChanger(String secim) {
-      if (secim == "Kus") {
-         return "mnt/cascade/xml/bird.xml";
-      }
-
-      if (secim == "At") {
-         return "mnt/cascade/xml/horse.xml";
-      }
-
-      if (secim == "Koyun") {
-         return "mnt/cascade/xml/sheep.xml";
-      }
-
-      if (secim == "Köpek") {
-         return "mnt/cascade/xml/dog.xml";
-      } else
+   public String xmlChanger() {
          //insan yüzü aranır...
          return "mnt/cascade/xml/lbpcascade_frontalface.xml";
    }

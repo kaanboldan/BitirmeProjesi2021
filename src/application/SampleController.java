@@ -57,7 +57,7 @@ import javafx.stage.Stage;
 
 public class SampleController {
 
-  //Tab1
+  //TODO:Tab1 start
   @FXML
   private Button image_save;
 
@@ -110,12 +110,6 @@ public class SampleController {
     imageEditing_slider4.setShowTickLabels(true);
     imageEditing_slider4.setMax(3);
     imageEditing_slider4.setMin(0);
-    ObservableList < String > list = Recognition_turSelection_cb.getItems();
-    list.add("Insan");
-    list.add("Kus");
-    list.add("At");
-    list.add("Koyun");
-    list.add("Köpek");
     
     ImageResizer_Scale.getItems().add(5.0);
     ImageResizer_Scale.getItems().add(10.0);
@@ -141,7 +135,7 @@ public class SampleController {
 
   }
 
-  //Buttons
+  
   @FXML
   void imageAdd_btn(ActionEvent event) throws IOException {
     System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -220,9 +214,10 @@ public class SampleController {
       System.out.print(us + ".açma durum |");
       
       Mat imageLock = Imgcodecs.imread("mnt/locking/Lockimage" + us + ".png");
-      Core.idft(imageLock, imageLock);
-
       Mat restoredImage = new Mat();
+
+      Core.idft(imageLock, restoredImage);
+
       Core.split(imageLock, this.planes);
       Core.normalize(this.planes.get(0), restoredImage, 0, 255, Core.NORM_MINMAX);
 
@@ -334,8 +329,8 @@ public class SampleController {
     this.stage = stage;
   }
 
-  //tab1 end
-  //tab2 start
+  //TODO:tab1 end
+  //TODO:tab2 start
 
   @FXML
   private ImageView imageEditing_currentImage;
@@ -386,10 +381,8 @@ public class SampleController {
       imageEditing_R.setDisable(false);
       imageEditing_G.setDisable(false);
       imageEditing_B.setDisable(false);
-
+      imageEditing_blur.setDisable(false);
       this.showHistogram(image);
-
-      System.out.println("Resim kaydedildi");
     }
 
   }
@@ -515,9 +508,9 @@ public class SampleController {
     }
   }
 
-  //tab2 end
+  //TODO:tab2 end
 
-  //tab3 start
+  //TODO:tab3 start
   @FXML
   private Button Recognition_calculateButton;
 
@@ -526,9 +519,6 @@ public class SampleController {
 
   @FXML
   private ImageView Recognition_Image;
-
-  @FXML
-  private ChoiceBox < String > Recognition_turSelection_cb;
 
   @FXML
   private Button Recognition_saveImageButton;
@@ -558,7 +548,7 @@ public class SampleController {
     System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
     String imgFile = "mnt/cache/3.png";
-    Mat src = imageEditing.Facerecognition(imgFile, imageEditing.xmlChanger(Recognition_turSelection_cb.getValue()));
+    Mat src = imageEditing.Facerecognition(imgFile, imageEditing.xmlChanger());
     this.imageEditing.updateImageView(Recognition_Image, mat2Image(src));
     Imgcodecs.imwrite("mnt/cache/3.png", src);
     System.out.println("Image Detection Finished");
@@ -576,8 +566,8 @@ public class SampleController {
     Imgcodecs.imwrite(selectedDirectory.getAbsolutePath() + "/image1.jpg", image);
   }
 
-  //tab3 end
-  //tab4 start
+  //TODO:Tab3 End
+  //TODO:Tab4 Start
   @FXML
   private ImageView ImageResizer_Image;
 
@@ -612,7 +602,7 @@ public class SampleController {
       int dotpos = srcImg.lastIndexOf(".");
       String extension = srcImg.substring(dotpos);
       String destImg = srcImg.substring(0, dotpos) + "_compressed" + extension;
-      int sonuc=fileSize/1024/8;
+      int sonuc=fileSize/1024;
       System.out.println("dosyaboyutu"+sonuc);
 
       int[] cbIndex= {5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95};
@@ -660,8 +650,6 @@ public class SampleController {
                   }
 
                   FileImageOutputStream output = new FileImageOutputStream(fileOut);
-        	      Mat finalImage = Imgcodecs.imread(destImg);
-                  imageEditing.updateImageView(ImageResizer_Image, mat2Image(finalImage));
                   writer.setOutput(output);
                   params.setCompressionQuality(quality);
                   writer.write(null, image, params);
@@ -717,10 +705,7 @@ public class SampleController {
       System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
 	  
 	  Mat src = Imgcodecs.imread("/mnt/cache/image0.png");
-      Mat dst = new Mat();
-      
-      
-          
+      Mat dst = new Mat();     
       
       if(ImageResizer_Scale.getValue()==5)
           Imgproc.resize(src, dst, new Size(5*src.rows()/100, 5*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
@@ -760,8 +745,7 @@ public class SampleController {
           Imgproc.resize(src, dst, new Size(90*src.rows()/100, 90*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
       if(ImageResizer_Scale.getValue()==95)
           Imgproc.resize(src, dst, new Size(95*src.rows()/100, 95*src.cols()/100), 0, 0,Imgproc.INTER_AREA);      
-      
-      
+
 
       Imgcodecs.imwrite("/mnt/cache/resim2.png", dst);
       this.imageEditing.updateImageView(ImageResizer_Image, mat2Image(this.image));
@@ -779,5 +763,5 @@ public class SampleController {
 
   }
 
-  //tab 4 end 
+  //TODO:Tab 4 End 
 }
